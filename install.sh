@@ -11,6 +11,10 @@ git clone git://git.drogon.net/wiringPi
 cd wiringPi
 ./build
 
+# Install ofxPiTFT
+cd ~/openFrameworks/addons/
+git clone git://github.com/patriciogonzalezvivo/ofxPiTFT
+
 # Compile vPlotter
 cd ~
 cd openFrameworks/apps/vPlotter/vPlotter

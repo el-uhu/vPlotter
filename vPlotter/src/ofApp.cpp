@@ -4,14 +4,14 @@
 void ofApp::setup(){
     ofEnableAlphaBlending();
     ofSetVerticalSync(true);
-    
+
     // PLOTTER
     //
     plotter.setup(degPenUp,degPenDown,mmMotorsDistance,mmPulleyRadius,stepsPerRotation,sysGpio);
     plotter.stepDelay   = stepDelay;
     plotter.penDelay    = penDelay;
     printArea = plotter.getPrintingArea();
-    
+
     if(oscPort > 0){
         receiver.setup(oscPort);
     } else {
@@ -26,12 +26,12 @@ void ofApp::setup(){
             ofPath p = svg.getPathAt(i);
             // svg defaults to non zero winding which doesn't look so good as contours
             p.setPolyWindingMode(OF_POLY_WINDING_ODD);
-            vector<ofPolyline>& lines = p.getOutline();
+            vector<ofPolyline>& lines = const_cast<vector&>(p.getOutline());
             for(int j=0;j<(int)lines.size();j++){
                 shape.push_back(lines[j].getResampledBySpacing(1));
             }
         }
-    
+
         if(bFit){
             float minX = 1000000000;
             float minY = 1000000000;
@@ -70,7 +70,7 @@ void ofApp::setup(){
                 }
             }
         }
-        
+
         if(scale != 100 || rotate != 0){
             ofPoint center = printArea.getCenter();
             float scl = ((float)(scale))/100.0f;
@@ -78,7 +78,7 @@ void ofApp::setup(){
             for (int i=0; i < shape.size(); i++) {
                 for (int j=0; j<shape[i].size(); j++) {
                     ofPoint toCenter = shape[i][j] - center;
-                    
+
                     float rad = toCenter.length()*scl;
                     float ang = atan2(toCenter.y,toCenter.x)+rot;
                     shape[i][j].x = center.x+rad*cos(ang);
@@ -86,7 +86,7 @@ void ofApp::setup(){
                 }
             }
         }
-        
+
         //  PRINT
         //
         plotter.print(shape);
@@ -95,19 +95,19 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
+
     if(oscPort > 0){
         while(receiver.hasWaitingMessages()){
             ofxOscMessage m;
             receiver.getNextMessage(&m);
-            
+
             if(m.getAddress() == "/setup"){
                 degPenUp = m.getArgAsInt32(0);
                 degPenDown = m.getArgAsInt32(1);
                 mmMotorsDistance = m.getArgAsInt32(2);
                 mmPulleyRadius = m.getArgAsInt32(3);
                 stepsPerRotation = m.getArgAsInt32(4);
-                
+
                 cout << "/setup " << degPenUp << " " << degPenDown << " " << mmMotorsDistance << " " << mmPulleyRadius << " " << stepsPerRotation << endl;
                 plotter.setup(degPenUp,degPenDown,mmMotorsDistance,mmPulleyRadius,stepsPerRotation,sysGpio);
                 printArea = plotter.getPrintingArea();
@@ -115,16 +115,16 @@ void ofApp::update(){
                 ofPoint pos;
                 pos.x = m.getArgAsFloat(0);
                 pos.y = m.getArgAsFloat(1);
-                
+
                 if(printArea.inside(pos)){
                     plotter.print(MOVE_ABS, pos);
                 }
-                
+
             } else if(m.getAddress() == "/move/rel"){
                 ofPoint pos;
                 pos.x = m.getArgAsFloat(0);
                 pos.y = m.getArgAsFloat(1);
-                
+
                 if(printArea.inside(pos)){
                     plotter.print(MOVE_REL, pos);
                 }
@@ -132,7 +132,7 @@ void ofApp::update(){
                 ofPoint pos;
                 pos.x = m.getArgAsFloat(0);
                 pos.y = m.getArgAsFloat(1);
-                
+
                 if(printArea.inside(pos)){
                     plotter.print(LINE_ABS, pos);
                 }
@@ -140,7 +140,7 @@ void ofApp::update(){
                 ofPoint pos;
                 pos.x = m.getArgAsFloat(0);
                 pos.y = m.getArgAsFloat(1);
-                
+
                 if(printArea.inside(pos)){
                     plotter.print(LINE_REL, pos);
                 }
@@ -165,8 +165,8 @@ void ofApp::draw(){
     ofRotateZ(-90);
     ofTranslate(-area.x,-area.y);
     ofTranslate(-area.width,0);
-    
-    
+
+
     ofSetColor(255);
     for (int i=0; i<shape.size(); i++) {
         shape[i].draw();
@@ -232,6 +232,6 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
