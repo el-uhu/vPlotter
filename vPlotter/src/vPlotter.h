@@ -8,7 +8,7 @@
 
 #pragma once
 #include "ofMain.h"
-#include "ofThread.h"
+
 #ifdef TARGET_RASPBERRY_PI
 #include "wiringPi.h"
 #include "softServo.h"
