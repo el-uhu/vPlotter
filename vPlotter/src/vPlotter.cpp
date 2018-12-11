@@ -12,16 +12,16 @@ vPlotter::vPlotter(){
     // delays in ms
     stepDelay   = 1;
     penDelay    = 50;
-    
+
     //  Pos in mm
     currentPos.set(0,0);
-    
+
     //  Pos step
     steps.M1    = 0;
     steps.M2    = 0;
     target.M1   = 0;
     target.M2   = 0;
-    
+
     //  States
     penState    = PEN_UP;
     bPlotting   = false;
@@ -34,7 +34,7 @@ bool vPlotter::setup(int _penPosUp, int _penPosDown, int _motorsDistance, int _p
     M2.set(motorsDistance, 0);
     pulleyRadius = _pulleyRadius;
     stepsPerRotation = _stepsPerRotation;
-    
+
     //  Set printing Area
     printingArea.set(M1,motorsDistance,motorsDistance);
     ofPoint testPos = printingArea.getCenter();
@@ -58,13 +58,13 @@ bool vPlotter::setup(int _penPosUp, int _penPosDown, int _motorsDistance, int _p
     printingArea.y = top;
     printingArea.width = width;
     printingArea.height = heigth;
-    
+
     //  Calibration
     currentPos = printingArea.getCenter();
     m2s = (2 * PI * pulleyRadius) / stepsPerRotation;
     steps = getStepsFor(currentPos);
     target = getStepsFor(currentPos);
-    
+
     //  SERVO SETUP
     //--------------------------------
     if(_penPosUp < 0) _penPosUp = 0;
@@ -74,7 +74,7 @@ bool vPlotter::setup(int _penPosUp, int _penPosDown, int _motorsDistance, int _p
     if(_penPosDown > 180) _penPosDown = 180;
     penPosDown = ofMap(_penPosDown,0,180,MIN_PULSE_WIDTH,MAX_PULSE_WIDTH);
     penState = PEN_UP;
-    
+
     //  Setup WiringPi
     //
 #ifdef TARGET_RASPBERRY_PI
@@ -89,21 +89,21 @@ bool vPlotter::setup(int _penPosUp, int _penPosDown, int _motorsDistance, int _p
             return false;
         }
     }
-    
+
     //  Pins
     pinMode(DIR_PIN_M1, OUTPUT);
     pinMode(STEP_PIN_M1, OUTPUT);
     pinMode(DIR_PIN_M2, OUTPUT);
     pinMode(STEP_PIN_M2, OUTPUT);
-    
+
     digitalWrite(DIR_PIN_M1, LOW);
     digitalWrite(DIR_PIN_M2, LOW);
-    
+
     softServoSetup(SERVO_PIN, -1, -1, -1, -1, -1, -1, -1);
     softServoWrite(SERVO_PIN, penPosUp);
     usleep(penDelay*1000.0f);
 #endif
-    
+
     return true;
 }
 
@@ -168,7 +168,7 @@ ofVec2f vPlotter::getResolution(ofPoint _pos){
     float c = M1.distance(M2);
     float b = M1.distance(_pos);
     float a = M2.distance(_pos);
-    
+
     float err = .00000000001;
     ofPoint pc = calcPointB(a, b, c);
     if((_pos.x-err<pc.x<_pos.x+err) ||
@@ -193,13 +193,13 @@ void vPlotter::print(vector<ofPolyline> _paths){
         stopThread();
         bPlotting = false;
     }
-    
+
     for(int i = 0; i < _paths.size(); i++) {
         for(int j = 0; j < _paths[i].getVertices().size(); j++) {
             addInstruction( ((j==0)?MOVE_ABS:LINE_ABS), _paths[i].getVertices()[j] );
         }
     }
-    
+
     if (instructions.size() > 0) {
         addInstruction(MOVE_ABS, printingArea.getCenter());
         bPlotting = true;
@@ -209,7 +209,7 @@ void vPlotter::print(vector<ofPolyline> _paths){
 
 void vPlotter::print(Comand _command, ofPoint _pos){
     bool printing = false;
-    
+
     if (!bPlotting){
         addInstruction(_command, _pos);
         if (instructions.size() > 0) {
@@ -227,7 +227,7 @@ void vPlotter::print(Comand _command, ofPoint _pos){
 
 bool vPlotter::addInstruction(Comand _command, ofPoint _pos){
     ofPoint t;
-    
+
     //  ABSolute or RELative positions??
     //
     switch (_command) {
@@ -240,24 +240,25 @@ bool vPlotter::addInstruction(Comand _command, ofPoint _pos){
             t = _pos + currentPos;
             break;
     }
-    
+
     //  Inside Area
     //
     if (t.x < printingArea.getLeft())   t.x = printingArea.getLeft();
     if (t.x > printingArea.getRight())  t.x = printingArea.getRight();
     if (t.y < printingArea.getTop())    t.y = printingArea.getTop();
     if (t.y > printingArea.getBottom()) t.y = printingArea.getBottom();
-    
+
     //  Make instruction
     //
     Instruction inst;
     inst.set(_pos);
     inst.cmd = _command;
     inst.target = getStepsFor(_pos);
-    
+
     //  Add
     //
     instructions.push_back(inst);
+    return;
 }
 
 void vPlotter::threadedFunction(){
@@ -281,7 +282,7 @@ void vPlotter::threadedFunction(){
 bool vPlotter::exeInstruction(Instruction _inst){
     MotorVal t, s;
     float sd,pd;
-    
+
     //  Set the right PEN
     //
     {
@@ -297,7 +298,7 @@ bool vPlotter::exeInstruction(Instruction _inst){
 #endif
                     usleep(pd);
                 }
-                
+
                 penState = PEN_DOWN;
             }
                 break;
@@ -310,14 +311,14 @@ bool vPlotter::exeInstruction(Instruction _inst){
 #endif
                     usleep(pd);
                 }
-                
+
                 penState = PEN_UP;
             }
                 break;
         }
-        
 
-        
+
+
         // Tmp Variables
         t = target = _inst.target;
         s = steps;
@@ -340,7 +341,7 @@ bool vPlotter::exeInstruction(Instruction _inst){
 #endif
             s.M1 += dir.M1;
         }
-        
+
         if(t.M2-s.M2 != 0){
 #ifdef TARGET_RASPBERRY_PI
             digitalWrite(STEP_PIN_M2, HIGH);
@@ -417,7 +418,7 @@ void vPlotter::draw(){
             ofPopStyle();
             ofPopMatrix();
         }
-        
+
         //  Future Instructions
         ofSetColor(0,255,255);
         ofBeginShape();
@@ -425,7 +426,7 @@ void vPlotter::draw(){
             ofVertex(instructions[i]);
         }
         ofEndShape();
-        
+
         ofPopStyle();
         ofPopMatrix();
         unlock();
