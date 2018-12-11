@@ -8,7 +8,7 @@
 
 #pragma once
 #include "ofMain.h"
-
+#include "ofThread.h"
 #ifdef TARGET_RASPBERRY_PI
 #include "wiringPi.h"
 #include "softServo.h"
@@ -58,9 +58,9 @@ struct Instruction : public ofPoint {
 class vPlotter : public ofThread {
 public:
     vPlotter();
-    
+
     bool        setup(int _degPenUp = 140 , int _degPenDown = 70, int _mmMotorsDistance = 1500, int _mmPulleyRadius = 5, int _stepsPerRotation = 800, bool _sysGPIO = false);
-    
+
     bool        isPrinting();
     bool        isHealthyAt(ofPoint _pos);
     int         getInstructionsLeft();
@@ -69,36 +69,36 @@ public:
     ofPoint     getPosFor(const MotorVal &_steps) const;
     ofVec2f     getTension(ofPoint _pos);       //  values between 0-1 are ok
     ofVec2f     getResolution(ofPoint _pos);    //  values between 0-1 are ok
-    
+
     void        print(vector<ofPolyline> _paths);
     void        print(Comand _command, ofPoint _pos);
-    
+
     void        stop();
     void        draw();
-    
+
     float       stepDelay;
     float       penDelay;
-    
+
 private:
     ofPoint     calcPointB(float a, float b, float c)const;
     void        threadedFunction();
-    
+
     bool        addInstruction(Comand _command, ofPoint _pos);
     bool        exeInstruction(Instruction _inst);
-    
+
     vector<Instruction> instructions;
-    
+
     float       m2s;
-    
+
     ofRectangle printingArea;
     ofPoint     M1,M2;
     ofPoint     currentPos;
     MotorVal    steps;
     MotorVal    target;
-    
+
     int         motorsDistance, pulleyRadius, stepsPerRotation;
     int         penPosUp, penPosDown;
-    
+
     bool        penState;
     bool        bPlotting;
 };
