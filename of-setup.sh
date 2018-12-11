@@ -7,9 +7,9 @@ sudo apt-get upgrade
 
 # Download openFrameworks
 cd
-wget https://openframeworks.cc/versions/v0.10.0/of_v0.10.0_linuxarmv6l_release.tar.gz
+wget https://openframeworks.cc/versions/v0.8.4/of_v0.8.4_linuxarmv6l_release.tar.gz
 mkdir openFrameworks
-tar vxfz of_v0.10.0_linuxarmv6l_release.tar.gz -C openFrameworks --strip-components 1
+tar vxfz of_v0.8.4_linuxarmv6l_release.tar.gz -C openFrameworks --strip-components 1
 
 # Install packages and compile openFrameworksCompiled
 cd /home/pi/openFrameworks/scripts/linux/debian
