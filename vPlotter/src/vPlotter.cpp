@@ -225,7 +225,7 @@ void vPlotter::print(Comand _command, ofPoint _pos){
     }
 }
 
-void vPlotter::addInstruction(Comand _command, ofPoint _pos){
+bool vPlotter::addInstruction(Comand _command, ofPoint _pos){
     ofPoint t;
 
     //  ABSolute or RELative positions??
@@ -258,6 +258,7 @@ void vPlotter::addInstruction(Comand _command, ofPoint _pos){
     //  Add
     //
     instructions.push_back(inst);
+    return true;
 }
 
 void vPlotter::threadedFunction(){
