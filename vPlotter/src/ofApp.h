@@ -3,7 +3,6 @@
 
 #include "ofxOsc.h"
 #include "ofxSvg.h"
-#include "ofxPiTFT.h"
 
 #include "vPlotter.h"
 
@@ -13,7 +12,7 @@ public:
     void update();
     void draw();
     void exit();
-    
+
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -24,23 +23,21 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-    ofxPiTFT            smallDisplay;
-    
     ofxOscReceiver      receiver;
 
     vPlotter            plotter;
     vector<ofPolyline>  shape;
     ofRectangle         printArea;
-    
+
     string              file;
-    
+
     float               stepDelay,penDelay;
     float               scale,rotate;
-    
+
     int                 degPenUp,degPenDown;
     int                 mmMotorsDistance,mmPulleyRadius,stepsPerRotation;
     int                 oscPort;
-    
+
     bool                bFit;
     bool                sysGpio;
 };

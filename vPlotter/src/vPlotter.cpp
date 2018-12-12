@@ -214,7 +214,7 @@ void vPlotter::print(Comand _command, ofPoint _pos){
         addInstruction(_command, _pos);
         if (instructions.size() > 0) {
             bPlotting = true;
-            vPlotter.startThread(true, false);
+            startThread(true, false);
         }
     } else {
         if(lock()){
