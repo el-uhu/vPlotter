@@ -203,7 +203,7 @@ void vPlotter::print(vector<ofPolyline> _paths){
     if (instructions.size() > 0) {
         addInstruction(MOVE_ABS, printingArea.getCenter());
         bPlotting = true;
-        startThread(true, false);
+        startThread();
     }
 }
 
@@ -214,7 +214,7 @@ void vPlotter::print(Comand _command, ofPoint _pos){
         addInstruction(_command, _pos);
         if (instructions.size() > 0) {
             bPlotting = true;
-            startThread(true, false);
+            startThread();
         }
     } else {
         if(lock()){
